@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inspirations Cadeaux</title>
+    <title>Boîte à Cadeaux 🎁</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -12,51 +12,59 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brandBg: '#F0F9FF', /* Un bleu très très clair (Sky 50) */
+                        brandPrimary: '#0EA5E9', /* Bleu clair/vibrant (Sky 500) */
+                        brandPrimaryDark: '#0284C7', /* Bleu un peu plus profond au survol */
+                        brandAccent: '#F97316', /* Orange vif (Orange 500) */
+                        brandAccentDark: '#EA580C', /* Orange foncé au survol */
+                        brandDark: '#0F172A', /* Bleu nuit très sombre pour le texte */
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #FAFAFA; color: #111827; }
+        body { background-color: #F0F9FF; color: #0F172A; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .gift-card { transition: all 0.2s ease; }
-        .gift-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .gift-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.15); }
     </style>
 </head>
-<body class="font-sans pb-24 selection:bg-gray-900 selection:text-white overflow-hidden" id="body-container">
+<body class="font-sans pb-24 selection:bg-brandAccent selection:text-white overflow-hidden" id="body-container">
 
     <!-- ÉCRAN DE CONNEXION -->
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-white/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 transition-opacity duration-500">
-        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-sm w-full text-center border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2 tracking-tight">Registre Cadeaux</h2>
-            <p class="text-sm text-gray-500 mb-8">Veuillez vous identifier pour accéder au carnet partagé.</p>
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-brandBg/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-sm w-full text-center border border-sky-100">
+            <h2 class="text-2xl font-bold text-brandPrimary mb-2 tracking-tight">Boîte à Cadeaux</h2>
+            <p class="text-sm text-slate-500 mb-8">Veuillez vous identifier pour accéder au carnet partagé.</p>
             
-            <input type="email" id="email-input" placeholder="Adresse e-mail" class="w-full text-center text-sm font-medium bg-gray-50 border border-gray-200 rounded-lg px-4 py-3.5 outline-none focus:border-gray-900 mb-3 transition-colors">
+            <input type="email" id="email-input" placeholder="Adresse e-mail" class="w-full text-center text-sm font-medium bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3.5 outline-none focus:border-brandPrimary mb-3 transition-colors text-brandDark">
             
-            <input type="password" id="pwd-input" placeholder="Mot de passe" class="w-full text-center text-sm font-medium bg-gray-50 border border-gray-200 rounded-lg px-4 py-3.5 outline-none focus:border-gray-900 mb-6 transition-colors">
+            <input type="password" id="pwd-input" placeholder="Mot de passe" class="w-full text-center text-sm font-medium bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3.5 outline-none focus:border-brandPrimary mb-6 transition-colors text-brandDark">
             
-            <button onclick="handleLogin()" id="btn-login" class="w-full bg-gray-900 hover:bg-black text-white font-medium py-3.5 rounded-lg transition shadow-md flex justify-center items-center text-sm">
+            <button onclick="handleLogin()" id="btn-login" class="w-full bg-brandAccent hover:bg-brandAccentDark text-white font-medium py-3.5 rounded-lg transition shadow-md flex justify-center items-center text-sm">
                 Ouvrir le registre
             </button>
             <p id="login-error" class="text-red-500 text-sm font-medium mt-4 opacity-0 transition-opacity">Identifiants incorrects.</p>
         </div>
     </div>
 
-    <!-- EN-TÊTE ÉPURÉ -->
-    <header class="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-20 py-4 px-6 mb-8">
+    <!-- EN-TÊTE -->
+    <header class="bg-white/80 backdrop-blur-lg border-b border-sky-100 sticky top-0 z-20 py-4 px-6 mb-8 shadow-sm">
         <div class="max-w-3xl mx-auto flex items-center justify-between">
             <div>
-                <h1 class="text-xl font-bold tracking-tight text-gray-900">Inspirations Cadeaux</h1>
-                <p class="text-xs text-gray-500 font-medium uppercase tracking-widest mt-0.5">Carnet d'idées partagé</p>
+                <h1 class="text-xl font-bold tracking-tight text-brandPrimary">Boîte à Cadeaux</h1>
+                <p class="text-xs text-brandAccent font-medium uppercase tracking-widest mt-0.5">Carnet partagé</p>
             </div>
             <div class="flex items-center gap-4">
-                <div id="gift-counter" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-md">
+                <div id="gift-counter" class="text-xs font-semibold text-brandPrimary bg-sky-50 px-3 py-1.5 rounded-md border border-sky-100">
                     0 idées
                 </div>
                 <!-- Bouton Déconnexion -->
-                <button onclick="handleLogout()" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center border border-gray-200" title="Se déconnecter">
+                <button onclick="handleLogout()" class="w-8 h-8 rounded-full bg-sky-50 hover:bg-sky-100 transition-colors flex items-center justify-center border border-sky-200" title="Se déconnecter">
                     <span class="w-2 h-2 rounded-full bg-green-500"></span>
                 </button>
             </div>
@@ -67,32 +75,32 @@
         
         <!-- Filtres principaux -->
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filtrer les destinataires</h2>
+            <h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Filtrer les destinataires</h2>
         </div>
         
         <div class="flex gap-2 overflow-x-auto pb-2 mb-2 hide-scroll" id="recipient-filters">
-            <button onclick="setRecipient('Tous')" class="filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-gray-900 text-white shadow-sm">Tout le monde</button>
-            <button onclick="setRecipient('Moi')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Moi</button>
-            <button onclick="setRecipient('Copain')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Copain</button>
-            <button onclick="setRecipient('Famille')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Famille</button>
-            <button onclick="setRecipient('Amis')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Amis</button>
+            <button onclick="setRecipient('Tous')" class="filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-brandPrimary text-white shadow-sm">Tout le monde</button>
+            <button onclick="setRecipient('Moi')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-slate-600 border border-sky-100 hover:bg-sky-50 hover:text-brandPrimary">Moi</button>
+            <button onclick="setRecipient('Copain')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-slate-600 border border-sky-100 hover:bg-sky-50 hover:text-brandPrimary">Copain</button>
+            <button onclick="setRecipient('Famille')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-slate-600 border border-sky-100 hover:bg-sky-50 hover:text-brandPrimary">Famille</button>
+            <button onclick="setRecipient('Amis')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-slate-600 border border-sky-100 hover:bg-sky-50 hover:text-brandPrimary">Amis</button>
         </div>
 
         <!-- Sous-filtres Famille -->
-        <div id="family-subfilters" class="hidden gap-2 overflow-x-auto pb-4 mb-2 hide-scroll border-t border-gray-100 pt-3">
-            <button onclick="setSubFilter('Tous')" class="subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-gray-800 text-white">Tous</button>
-            <button onclick="setSubFilter('Parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Parents</button>
-            <button onclick="setSubFilter('Fratrie')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Fratrie</button>
-            <button onclick="setSubFilter('Grands-parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Grands-parents</button>
-            <button onclick="setSubFilter('Oncles/Tantes')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Oncles/Tantes</button>
-            <button onclick="setSubFilter('Enfants/Ados')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Enfants</button>
+        <div id="family-subfilters" class="hidden gap-2 overflow-x-auto pb-4 mb-2 hide-scroll border-t border-sky-100 pt-3">
+            <button onclick="setSubFilter('Tous')" class="subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-brandPrimaryDark text-white">Tous</button>
+            <button onclick="setSubFilter('Parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600">Parents</button>
+            <button onclick="setSubFilter('Fratrie')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600">Fratrie</button>
+            <button onclick="setSubFilter('Grands-parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600">Grands-parents</button>
+            <button onclick="setSubFilter('Oncles/Tantes')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600">Oncles/Tantes</button>
+            <button onclick="setSubFilter('Enfants/Ados')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600">Enfants</button>
         </div>
 
-        <!-- Filtre de statut (Onglets épurés) -->
-        <div class="flex gap-4 mb-8 mt-6 border-b border-gray-200">
-            <button onclick="setStatus('Tous')" id="status-Tous" class="status-btn pb-3 text-sm font-semibold border-b-2 border-gray-900 text-gray-900 transition-all">Toutes les idées</button>
-            <button onclick="setStatus('Idée')" id="status-Idée" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all">À trouver</button>
-            <button onclick="setStatus('Acheté')" id="status-Acheté" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all">Déjà achetés</button>
+        <!-- Filtre de statut (Onglets) -->
+        <div class="flex gap-6 mb-8 mt-6 border-b border-sky-200">
+            <button onclick="setStatus('Tous')" id="status-Tous" class="status-btn pb-3 text-sm font-semibold border-b-2 border-brandAccent text-brandAccent transition-all">Toutes les idées</button>
+            <button onclick="setStatus('Idée')" id="status-Idée" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-brandAccent transition-all">À trouver</button>
+            <button onclick="setStatus('Acheté')" id="status-Acheté" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-brandAccent transition-all">Déjà achetés</button>
         </div>
 
         <!-- Conteneur des cadeaux -->
@@ -100,27 +108,27 @@
             <!-- Rempli par JavaScript -->
         </div>
 
-        <!-- Bouton flottant Ajouter Minimaliste -->
-        <button onclick="openAddModal()" id="btn-add" class="fixed bottom-8 right-8 bg-gray-900 text-white h-14 w-14 flex items-center justify-center rounded-full shadow-xl hover:bg-black transition-transform hover:scale-105 z-50 text-2xl font-light hidden">
+        <!-- Bouton flottant Ajouter -->
+        <button onclick="openAddModal()" id="btn-add" class="fixed bottom-8 right-8 bg-brandAccent text-white h-14 w-14 flex items-center justify-center rounded-full shadow-lg shadow-orange-500/30 hover:bg-brandAccentDark transition-transform hover:scale-105 z-50 text-2xl font-light hidden border-2 border-white">
             +
         </button>
 
         <!-- Modale d'ajout de cadeau -->
-        <dialog id="add-modal" class="p-0 rounded-2xl shadow-2xl backdrop:bg-gray-900/40 backdrop-blur-sm max-w-md w-full mx-auto mt-20 border border-gray-100">
+        <dialog id="add-modal" class="p-0 rounded-2xl shadow-2xl backdrop:bg-slate-900/50 backdrop-blur-sm max-w-md w-full mx-auto mt-20 border border-sky-100">
             <div class="bg-white p-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Nouvelle idée</h3>
-                    <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-900 text-2xl font-light leading-none transition-colors">&times;</button>
+                    <h3 class="text-xl font-bold text-brandPrimary tracking-tight">Nouvelle idée</h3>
+                    <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-light leading-none transition-colors">&times;</button>
                 </div>
                 <form id="add-form" onsubmit="submitNewGift(event)" class="space-y-5">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Nom du cadeau</label>
-                        <input type="text" id="f-titre" required placeholder="Ex: Montre classique..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Nom du cadeau</label>
+                        <input type="text" id="f-titre" required placeholder="Ex: Montre classique..." class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Destinataire</label>
-                            <select id="f-dest" onchange="toggleProcheField()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Destinataire</label>
+                            <select id="f-dest" onchange="toggleProcheField()" class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                                 <option value="Moi">Moi</option>
                                 <option value="Copain">Copain</option>
                                 <option value="Famille">Famille</option>
@@ -128,14 +136,14 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Budget estimé</label>
-                            <input type="text" id="f-prix" placeholder="Ex: 50€" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Budget estimé</label>
+                            <input type="text" id="f-prix" placeholder="Ex: 50€" class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                         </div>
                     </div>
                     
                     <div id="proche-container" class="hidden">
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Lien de parenté</label>
-                        <select id="f-proche" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Lien de parenté</label>
+                        <select id="f-proche" class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                             <option value="Parents">Parents</option>
                             <option value="Fratrie">Fratrie</option>
                             <option value="Grands-parents">Grands-parents</option>
@@ -146,28 +154,28 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Occasion</label>
-                            <input type="text" id="f-occasion" placeholder="Noël, Anniv..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Occasion</label>
+                            <input type="text" id="f-occasion" placeholder="Noël, Anniv..." class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Statut</label>
-                            <select id="f-statut" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Statut</label>
+                            <select id="f-statut" class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                                 <option value="Idée">À trouver</option>
                                 <option value="Acheté">Déjà acheté</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Lien Web (Optionnel)</label>
-                        <input type="url" id="f-lien" placeholder="https://..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Lien Web (Optionnel)</label>
+                        <input type="url" id="f-lien" placeholder="https://..." class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Détails (Optionnel)</label>
-                        <input type="text" id="f-note" placeholder="Taille, couleur..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Détails (Optionnel)</label>
+                        <input type="text" id="f-note" placeholder="Taille, couleur..." class="w-full bg-sky-50/50 border border-sky-100 rounded-lg px-4 py-3 text-sm outline-none focus:border-brandPrimary transition-colors text-brandDark">
                     </div>
                     
                     <div class="pt-2">
-                        <button type="submit" id="btn-submit" class="w-full bg-gray-900 text-white font-medium py-3.5 rounded-lg shadow-sm hover:bg-black transition-colors text-sm">
+                        <button type="submit" id="btn-submit" class="w-full bg-brandAccent text-white font-medium py-3.5 rounded-lg shadow-md hover:bg-brandAccentDark transition-colors text-sm">
                             Enregistrer l'idée
                         </button>
                     </div>
@@ -315,7 +323,7 @@
             unsubscribeSnapshot = onSnapshot(collection(db, COLLECTION_PATH), async (snapshot) => {
                 if (snapshot.empty && !isSeeding) {
                     isSeeding = true;
-                    document.getElementById('gifts-container').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500 font-medium animate-pulse">Initialisation du carnet d'idées...</p></div>`;
+                    document.getElementById('gifts-container').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-brandPrimary font-medium animate-pulse">Ouverture du registre partagé...</p></div>`;
                     
                     const batch = writeBatch(db);
                     baseCadeaux.forEach((c, index) => {
@@ -338,9 +346,9 @@
             currentRecipient = rec;
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.innerText.includes(rec) || (rec === 'Tous' && btn.innerText.includes('Tout'))) {
-                    btn.className = "filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-gray-900 text-white shadow-sm";
+                    btn.className = "filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-brandPrimary text-white shadow-sm";
                 } else {
-                    btn.className = "filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50";
+                    btn.className = "filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-slate-600 border border-sky-100 hover:bg-sky-50 hover:text-brandPrimary";
                 }
             });
 
@@ -366,9 +374,9 @@
         function updateSubFilterButtons() {
             document.querySelectorAll('.subfilter-btn').forEach(btn => {
                 if(btn.innerText === currentSubFilter || (currentSubFilter === 'Tous' && btn.innerText === 'Tous')) {
-                    btn.className = "subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-gray-800 text-white";
+                    btn.className = "subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-brandPrimaryDark text-white";
                 } else {
-                    btn.className = "subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600";
+                    btn.className = "subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-sky-100 text-slate-600";
                 }
             });
         }
@@ -376,10 +384,10 @@
         window.setStatus = function(stat) {
             currentStatus = stat;
             document.querySelectorAll('.status-btn').forEach(btn => {
-                btn.className = "status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all";
+                btn.className = "status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-brandAccent transition-all";
             });
             const activeBtn = document.getElementById(`status-${stat}`);
-            activeBtn.className = "status-btn pb-3 text-sm font-semibold border-b-2 border-gray-900 text-gray-900 transition-all";
+            activeBtn.className = "status-btn pb-3 text-sm font-semibold border-b-2 border-brandAccent text-brandAccent transition-all";
             renderGifts();
         };
 
@@ -412,16 +420,16 @@
 
             if(filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
-                        <p class="text-sm font-medium text-gray-500">Aucune idée trouvée pour ces critères.</p>
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-sky-200">
+                        <p class="text-sm font-medium text-slate-500">Aucune idée trouvée pour ces critères.</p>
                     </div>`;
                 return;
             }
 
             filtered.forEach(cadeau => {
                 let badgeClass = cadeau.statut === 'Acheté' 
-                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' 
-                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
+                    : 'bg-orange-50 text-brandAccent border-orange-200 hover:bg-orange-100';
                 
                 let iconStatut = cadeau.statut === 'Acheté' ? '✓' : '+';
                 let textStatut = cadeau.statut === 'Acheté' ? 'Acheté' : 'À trouver';
@@ -431,27 +439,27 @@
                 if (cadeau.occasion) destLabel += ` • ${cadeau.occasion}`;
 
                 const card = document.createElement('div');
-                card.className = "gift-card bg-white rounded-xl p-5 border border-gray-200 relative flex flex-col justify-between";
+                card.className = "gift-card bg-white rounded-xl p-5 border border-sky-100 relative flex flex-col justify-between shadow-sm";
                 
                 card.innerHTML = `
-                    <button onclick="deleteGift('${cadeau.id}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors text-lg leading-none" title="Supprimer">✕</button>
+                    <button onclick="deleteGift('${cadeau.id}')" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-colors text-lg leading-none" title="Supprimer">✕</button>
                     
                     <div class="pr-6 mb-3">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 bg-gray-100 px-2 py-1 rounded mb-2 inline-block">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-brandAccent bg-orange-50 px-2 py-1 rounded mb-2 inline-block">
                             Pour: ${destLabel}
                         </span>
-                        <h3 class="text-base font-bold text-gray-900 leading-tight">${cadeau.titre}</h3>
-                        ${cadeau.prix ? `<span class="text-sm font-medium text-gray-500 mt-1 block">${cadeau.prix}</span>` : ''}
+                        <h3 class="text-base font-bold text-slate-900 leading-tight">${cadeau.titre}</h3>
+                        ${cadeau.prix ? `<span class="text-sm font-semibold text-brandAccent mt-1 block">${cadeau.prix}</span>` : ''}
                     </div>
                     
-                    ${cadeau.note ? `<p class="text-xs text-gray-500 italic mb-4">Note : ${cadeau.note}</p>` : '<div class="mb-4"></div>'}
+                    ${cadeau.note ? `<p class="text-xs text-slate-500 italic mb-4">Note : ${cadeau.note}</p>` : '<div class="mb-4"></div>'}
                     
-                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-sky-50">
                         <button onclick="toggleGiftStatus('${cadeau.id}')" class="text-xs font-semibold px-3 py-1.5 rounded-md border transition-colors flex items-center gap-1.5 ${badgeClass}">
                             <span class="text-sm leading-none">${iconStatut}</span> ${textStatut}
                         </button>
                         
-                        ${cadeau.lien ? `<a href="${cadeau.lien}" target="_blank" class="text-xs font-semibold text-gray-900 hover:text-gray-500 transition-colors flex items-center gap-1">Voir en ligne <span>↗</span></a>` : ''}
+                        ${cadeau.lien ? `<a href="${cadeau.lien}" target="_blank" class="text-xs font-semibold text-brandPrimary hover:text-brandPrimaryDark transition-colors flex items-center gap-1">Voir en ligne <span>↗</span></a>` : ''}
                     </div>
                 `;
                 container.appendChild(card);
