@@ -1,112 +1,141 @@
-
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boîte à Cadeaux 🎁</title>
+    <title>Inspirations Cadeaux</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        brandBg: '#F3F4F6',
-                        brandPrimary: '#6366F1', /* Indigo élégant */
-                        brandAccent: '#EC4899', /* Rose vibrant */
-                        brandDark: '#1F2937',
-                        brandCard: '#FFFFFF'
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
+        body { background-color: #FAFAFA; color: #111827; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .gift-card { transition: all 0.2s ease; }
+        .gift-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="bg-brandBg text-brandDark font-sans pb-24 selection:bg-brandAccent selection:text-white">
+<body class="font-sans pb-24 selection:bg-gray-900 selection:text-white overflow-hidden" id="body-container">
 
-    <header class="bg-brandPrimary text-white p-6 shadow-md rounded-b-3xl mb-6 sticky top-0 z-20">
-        <div class="max-w-2xl mx-auto flex items-center justify-between">
+    <!-- ÉCRAN DE CONNEXION -->
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-white/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-sm w-full text-center border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2 tracking-tight">Registre Cadeaux</h2>
+            <p class="text-sm text-gray-500 mb-8">Veuillez vous identifier pour accéder au carnet partagé.</p>
+            
+            <input type="email" id="email-input" placeholder="Adresse e-mail" class="w-full text-center text-sm font-medium bg-gray-50 border border-gray-200 rounded-lg px-4 py-3.5 outline-none focus:border-gray-900 mb-3 transition-colors">
+            
+            <input type="password" id="pwd-input" placeholder="Mot de passe" class="w-full text-center text-sm font-medium bg-gray-50 border border-gray-200 rounded-lg px-4 py-3.5 outline-none focus:border-gray-900 mb-6 transition-colors">
+            
+            <button onclick="handleLogin()" id="btn-login" class="w-full bg-gray-900 hover:bg-black text-white font-medium py-3.5 rounded-lg transition shadow-md flex justify-center items-center text-sm">
+                Ouvrir le registre
+            </button>
+            <p id="login-error" class="text-red-500 text-sm font-medium mt-4 opacity-0 transition-opacity">Identifiants incorrects.</p>
+        </div>
+    </div>
+
+    <!-- EN-TÊTE ÉPURÉ -->
+    <header class="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-20 py-4 px-6 mb-8">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-black mb-1">🎁 Boîte à Cadeaux</h1>
-                <p class="text-sm text-indigo-100 font-medium">L'inspiration à portée de clic</p>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900">Inspirations Cadeaux</h1>
+                <p class="text-xs text-gray-500 font-medium uppercase tracking-widest mt-0.5">Carnet d'idées partagé</p>
             </div>
-            <div id="gift-counter" class="bg-white/20 px-3 py-1.5 rounded-xl font-bold text-sm">
-                0 idées
+            <div class="flex items-center gap-4">
+                <div id="gift-counter" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-md">
+                    0 idées
+                </div>
+                <!-- Bouton Déconnexion -->
+                <button onclick="handleLogout()" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center border border-gray-200" title="Se déconnecter">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-2xl mx-auto px-4">
+    <main class="max-w-3xl mx-auto px-4">
         
-        <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 ml-1">Pour qui ?</h2>
+        <!-- Filtres principaux -->
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filtrer les destinataires</h2>
+        </div>
+        
         <div class="flex gap-2 overflow-x-auto pb-2 mb-2 hide-scroll" id="recipient-filters">
-            <button onclick="setRecipient('Tous')" class="filter-btn active shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-brandPrimary text-white shadow-md">Tout le monde</button>
-            <button onclick="setRecipient('Moi')" class="filter-btn shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-gray-600 border border-gray-200">🙋‍♀️ Moi (23 ans)</button>
-            <button onclick="setRecipient('Copain')" class="filter-btn shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-gray-600 border border-gray-200">❤️ Copain (25 ans)</button>
-            <button onclick="setRecipient('Famille')" class="filter-btn shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-gray-600 border border-gray-200">👨‍👩‍👧 Famille</button>
-            <button onclick="setRecipient('Amis')" class="filter-btn shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-gray-600 border border-gray-200">🍻 Amis</button>
+            <button onclick="setRecipient('Tous')" class="filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-gray-900 text-white shadow-sm">Tout le monde</button>
+            <button onclick="setRecipient('Moi')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Moi</button>
+            <button onclick="setRecipient('Copain')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Copain</button>
+            <button onclick="setRecipient('Famille')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Famille</button>
+            <button onclick="setRecipient('Amis')" class="filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">Amis</button>
         </div>
 
-        <!-- Sous-filtres Famille (Cachés par défaut) -->
-        <div id="family-subfilters" class="hidden gap-2 overflow-x-auto pb-4 mb-2 hide-scroll">
-            <button onclick="setSubFilter('Tous')" class="subfilter-btn active shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-brandDark text-white">Tous</button>
-            <button onclick="setSubFilter('Parents')" class="subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700">Parents</button>
-            <button onclick="setSubFilter('Fratrie')" class="subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700">Fratrie</button>
-            <button onclick="setSubFilter('Grands-parents')" class="subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700">Grands-parents</button>
-            <button onclick="setSubFilter('Oncles/Tantes')" class="subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700">Oncles & Tantes</button>
-            <button onclick="setSubFilter('Enfants/Ados')" class="subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700">Enfants & Ados</button>
+        <!-- Sous-filtres Famille -->
+        <div id="family-subfilters" class="hidden gap-2 overflow-x-auto pb-4 mb-2 hide-scroll border-t border-gray-100 pt-3">
+            <button onclick="setSubFilter('Tous')" class="subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-gray-800 text-white">Tous</button>
+            <button onclick="setSubFilter('Parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Parents</button>
+            <button onclick="setSubFilter('Fratrie')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Fratrie</button>
+            <button onclick="setSubFilter('Grands-parents')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Grands-parents</button>
+            <button onclick="setSubFilter('Oncles/Tantes')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Oncles/Tantes</button>
+            <button onclick="setSubFilter('Enfants/Ados')" class="subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600">Enfants</button>
         </div>
 
-        <div class="flex gap-2 mb-6 p-1.5 bg-gray-200/80 rounded-2xl">
-            <button onclick="setStatus('Tous')" id="status-Tous" class="status-btn flex-1 py-2.5 rounded-xl text-sm font-bold bg-white shadow-sm text-brandPrimary transition-all">Tout</button>
-            <button onclick="setStatus('Idée')" id="status-Idée" class="status-btn flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 transition-all">💡 À trouver</button>
-            <button onclick="setStatus('Acheté')" id="status-Acheté" class="status-btn flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 transition-all">✅ Achetés</button>
+        <!-- Filtre de statut (Onglets épurés) -->
+        <div class="flex gap-4 mb-8 mt-6 border-b border-gray-200">
+            <button onclick="setStatus('Tous')" id="status-Tous" class="status-btn pb-3 text-sm font-semibold border-b-2 border-gray-900 text-gray-900 transition-all">Toutes les idées</button>
+            <button onclick="setStatus('Idée')" id="status-Idée" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all">À trouver</button>
+            <button onclick="setStatus('Acheté')" id="status-Acheté" class="status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all">Déjà achetés</button>
         </div>
 
         <!-- Conteneur des cadeaux -->
-        <div id="gifts-container" class="space-y-4">
+        <div id="gifts-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Rempli par JavaScript -->
         </div>
 
-        <!-- Bouton flottant Ajouter -->
-        <button onclick="openAddModal()" class="fixed bottom-6 right-6 bg-brandAccent text-white h-14 w-14 flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(236,72,153,0.5)] hover:scale-110 transition-transform z-50 text-2xl border-2 border-white">
-            ➕
+        <!-- Bouton flottant Ajouter Minimaliste -->
+        <button onclick="openAddModal()" id="btn-add" class="fixed bottom-8 right-8 bg-gray-900 text-white h-14 w-14 flex items-center justify-center rounded-full shadow-xl hover:bg-black transition-transform hover:scale-105 z-50 text-2xl font-light hidden">
+            +
         </button>
 
         <!-- Modale d'ajout de cadeau -->
-        <dialog id="add-modal" class="p-0 rounded-3xl shadow-2xl backdrop:bg-brandDark/60 max-w-md w-full mx-auto mt-10 border border-gray-100">
-            <div class="bg-white p-6">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-xl font-black text-gray-800">Ajouter une idée</h3>
-                    <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none">&times;</button>
+        <dialog id="add-modal" class="p-0 rounded-2xl shadow-2xl backdrop:bg-gray-900/40 backdrop-blur-sm max-w-md w-full mx-auto mt-20 border border-gray-100">
+            <div class="bg-white p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Nouvelle idée</h3>
+                    <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-900 text-2xl font-light leading-none transition-colors">&times;</button>
                 </div>
-                <form id="add-form" onsubmit="submitNewGift(event)" class="space-y-4">
+                <form id="add-form" onsubmit="submitNewGift(event)" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cadeau</label>
-                        <input type="text" id="f-titre" required placeholder="Ex: Baskets New Balance..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Nom du cadeau</label>
+                        <input type="text" id="f-titre" required placeholder="Ex: Montre classique..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pour qui ?</label>
-                            <select id="f-dest" onchange="toggleProcheField()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
-                                <option value="Moi">🙋‍♀️ Moi</option>
-                                <option value="Copain">❤️ Copain</option>
-                                <option value="Famille">👨‍👩‍👧 Famille</option>
-                                <option value="Amis">🍻 Amis</option>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Destinataire</label>
+                            <select id="f-dest" onchange="toggleProcheField()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                                <option value="Moi">Moi</option>
+                                <option value="Copain">Copain</option>
+                                <option value="Famille">Famille</option>
+                                <option value="Amis">Amis</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Prix approx.</label>
-                            <input type="text" id="f-prix" placeholder="Ex: 50€" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Budget estimé</label>
+                            <input type="text" id="f-prix" placeholder="Ex: 50€" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                         </div>
                     </div>
                     
                     <div id="proche-container" class="hidden">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Membre de la famille</label>
-                        <select id="f-proche" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Lien de parenté</label>
+                        <select id="f-proche" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                             <option value="Parents">Parents</option>
                             <option value="Fratrie">Fratrie</option>
                             <option value="Grands-parents">Grands-parents</option>
@@ -115,223 +144,206 @@
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Occasion</label>
-                            <input type="text" id="f-occasion" placeholder="Ex: Noël, Anniversaire..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Occasion</label>
+                            <input type="text" id="f-occasion" placeholder="Noël, Anniv..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Statut</label>
-                            <select id="f-statut" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
-                                <option value="Idée">💡 Idée</option>
-                                <option value="Acheté">✅ Acheté</option>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Statut</label>
+                            <select id="f-statut" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
+                                <option value="Idée">À trouver</option>
+                                <option value="Acheté">Déjà acheté</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Lien Web (Optionnel)</label>
-                        <input type="url" id="f-lien" placeholder="https://..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Lien Web (Optionnel)</label>
+                        <input type="url" id="f-lien" placeholder="https://..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Note (Optionnel)</label>
-                        <input type="text" id="f-note" placeholder="Taille, couleur, préférence..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brandPrimary">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Détails (Optionnel)</label>
+                        <input type="text" id="f-note" placeholder="Taille, couleur..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors">
                     </div>
-                    <button type="submit" class="w-full bg-brandAccent text-white font-bold py-3 rounded-xl mt-2 shadow-md hover:bg-pink-600 transition">Enregistrer le cadeau</button>
+                    
+                    <div class="pt-2">
+                        <button type="submit" id="btn-submit" class="w-full bg-gray-900 text-white font-medium py-3.5 rounded-lg shadow-sm hover:bg-black transition-colors text-sm">
+                            Enregistrer l'idée
+                        </button>
+                    </div>
                 </form>
             </div>
         </dialog>
     </main>
 
-    <script>
-        const STORAGE_KEY = 'boite_cadeaux_complete_v5';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 🔴 CLÉS FIREBASE 🔴
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNI2b-69gTENfzwjVq3jQCkXppJIMZrRU",
+            authDomain: "notrealbum-e1918.firebaseapp.com",
+            projectId: "notrealbum-e1918",
+            storageBucket: "notrealbum-e1918.firebasestorage.app",
+            messagingSenderId: "253496221106",
+            appId: "1:253496221106:web:59404a9b7dfcc1962358ab"
+        };   
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const COLLECTION_PATH = `cadeaux`;
+
+        const loginScreen = document.getElementById('login-screen');
+        const bodyContainer = document.getElementById('body-container');
         
-        // LA MEGA LISTE DES 130+ IDEES PRE-REMPLIES
-        const baseCadeaux = [
-            // ================== MOI (23 ANS) ==================
-            { id: 1, destinataire: "Moi", titre: "Baskets Adidas Campus 00s", prix: "110€", lien: "", statut: "Idée", occasion: "Anniv / Noël", note: "Couleur verte ou beige, pointure habituelle" },
-            { id: 2, destinataire: "Moi", titre: "Sac Polène (Numéro Dix ou Neuf)", prix: "350€", lien: "https://fr.polene-paris.com", statut: "Idée", occasion: "Gros cadeau", note: "Couleur Camel ou Noir" },
-            { id: 3, destinataire: "Moi", titre: "Atelier Poterie / Céramique", prix: "50€", lien: "https://wecandoo.fr/", statut: "Idée", occasion: "Anniversaire", note: "Pour faire des tasses" },
-            { id: 4, destinataire: "Moi", titre: "Coffret Charlotte Tilbury (Pillow Talk)", prix: "45€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Noël", note: "Le kit lèvres" },
-            { id: 5, destinataire: "Moi", titre: "Gua Sha & Roller en Quartz", prix: "25€", lien: "", statut: "Idée", occasion: "Petit cadeau", note: "Pour la routine skincare" },
-            { id: 6, destinataire: "Moi", titre: "Appareil photo argentique réutilisable", prix: "40€", lien: "https://www.kodak.com", statut: "Idée", occasion: "Anniversaire", note: "Kodak Ektar H35 (le format half-frame) + pellicules" },
-            { id: 7, destinataire: "Moi", titre: "Veste blazer oversize", prix: "70€", lien: "https://www.zara.com", statut: "Idée", occasion: "Noël", note: "Gris chiné ou beige" },
-            { id: 8, destinataire: "Moi", titre: "Brosse soufflante (Type Revlon/Dyson)", prix: "60-400€", lien: "", statut: "Idée", occasion: "Noël", note: "Pour les brushings parfaits" },
-            { id: 9, destinataire: "Moi", titre: "Parfum Libre - Yves Saint Laurent", prix: "80€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Anniversaire", note: "Eau de parfum classique" },
-            { id: 10, destinataire: "Moi", titre: "AirTags Apple", prix: "35€", lien: "https://www.apple.com", statut: "Idée", occasion: "Noël", note: "Pour ne plus perdre mes clés" },
-            { id: 11, destinataire: "Moi", titre: "Lampe Sunset pour la chambre", prix: "20€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Secret Santa", note: "Effet golden hour" },
-            { id: 12, destinataire: "Moi", titre: "Coffret huiles cheveux Gisou", prix: "35€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Noël", note: "" },
-            { id: 13, destinataire: "Moi", titre: "Concert de mon artiste préféré", prix: "60€", lien: "https://www.ticketmaster.fr", statut: "Idée", occasion: "Anniversaire", note: "À surveiller !" },
-
-            // ================== COPAIN (25 ANS & RUNNING) ==================
-            { id: 14, destinataire: "Copain", titre: "Casque conduction osseuse Shokz", prix: "140€", lien: "https://shokz.com", statut: "Idée", occasion: "25 ans", note: "Modèle OpenRun, indispensable pour courir en sécurité" },
-            { id: 15, destinataire: "Copain", titre: "Montre Garmin Forerunner 265", prix: "450€", lien: "https://www.garmin.com", statut: "Idée", occasion: "Gros cadeau 25 ans", note: "La meilleure montre running actuelle (on peut s'y mettre à plusieurs)" },
-            { id: 16, destinataire: "Copain", titre: "Dossard pour un beau Semi-Marathon", prix: "50€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Paris, Bordeaux ou Valence" },
-            { id: 17, destinataire: "Copain", titre: "Gilet d'hydratation Salomon", prix: "90€", lien: "https://www.salomon.com", statut: "Idée", occasion: "Noël", note: "Modèle Active Skin 4 ou 8 (Taille M)" },
-            { id: 18, destinataire: "Copain", titre: "Chaussettes techniques running", prix: "20€", lien: "https://www.stancesocks.fr", statut: "Idée", occasion: "Petit cadeau", note: "Stance ou Compressport" },
-            { id: 19, destinataire: "Copain", titre: "T-shirt respirant stylé (Satisfy/Soar)", prix: "80€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Du textile running un peu premium" },
-            { id: 20, destinataire: "Copain", titre: "Pistolet de massage musculaire", prix: "100€", lien: "https://www.therabody.com", statut: "Idée", occasion: "Noël", note: "Pour sa récup après les longues sorties" },
-            { id: 21, destinataire: "Copain", titre: "Pack de gels/nutrition Maurten", prix: "40€", lien: "https://www.maurten.com", statut: "Idée", occasion: "Petit cadeau", note: "La marque pro, pack découverte" },
-            { id: 22, destinataire: "Copain", titre: "Bonnet de course Ciele", prix: "35€", lien: "https://cieleathletics.com", statut: "Idée", occasion: "Noël", note: "Très stylé et technique" },
-            { id: 23, destinataire: "Copain", titre: "Week-end surprise (Europe)", prix: "250€", lien: "https://www.airbnb.fr", statut: "Idée", occasion: "25 ans !", note: "Rome, Lisbonne ou Amsterdam" },
-            { id: 24, destinataire: "Copain", titre: "Stage de pilotage", prix: "150€", lien: "https://www.smartbox.com", statut: "Idée", occasion: "Anniversaire", note: "Sur circuit (Porsche, Ferrari...)" },
-            { id: 25, destinataire: "Copain", titre: "Abonnement Strava Premium (1 an)", prix: "60€", lien: "https://www.strava.com", statut: "Idée", occasion: "Noël", note: "Le réseau social des coureurs" },
-            { id: 26, destinataire: "Copain", titre: "Livre 'Born to Run'", prix: "22€", lien: "https://www.fnac.com", statut: "Idée", occasion: "Petit cadeau", note: "Le livre culte de la course à pied" },
-
-            // ================== AMIS ==================
-            { id: 27, destinataire: "Amis", titre: "Jeu 'Tu te mets combien ?' (TTMC)", prix: "35€", lien: "", statut: "Idée", occasion: "Crémaillère", note: "Le meilleur jeu de culture G fun" },
-            { id: 28, destinataire: "Amis", titre: "Jeu 'Code Names'", prix: "20€", lien: "", statut: "Idée", occasion: "Noël / Soirée", note: "Incontournable pour jouer en équipe" },
-            { id: 29, destinataire: "Amis", titre: "Kit à faire ses propres cocktails", prix: "30€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Anniv Pote", note: "Shaker, doseur, pilon" },
-            { id: 30, destinataire: "Amis", titre: "Polaroid / Instax Mini 12", prix: "80€", lien: "", statut: "Idée", occasion: "Cadeau commun", note: "Pour garder des souvenirs des soirées" },
-            { id: 31, destinataire: "Amis", titre: "Mug rigolo / personnalisé", prix: "15€", lien: "", statut: "Idée", occasion: "Secret Santa", note: "Au bureau" },
-            { id: 32, destinataire: "Amis", titre: "Abonnement bières (Une Petite Mousse)", prix: "60€", lien: "https://unepetitemousse.fr", statut: "Idée", occasion: "Anniversaire", note: "Box 3 mois" },
-            { id: 33, destinataire: "Amis", titre: "Plante d'intérieur facile (Monstera)", prix: "25€", lien: "", statut: "Idée", occasion: "Crémaillère", note: "Dans un beau cache-pot" },
-            { id: 34, destinataire: "Amis", titre: "Jeu 'Juduku' ou 'Blanc Manger Coco'", prix: "25€", lien: "", statut: "Idée", occasion: "Soirée", note: "Humour noir/décalé" },
-
-            // ================== FAMILLE : PARENTS ==================
-            { id: 35, destinataire: "Famille", proche: "Parents", titre: "Machine à café à grains (Delonghi)", prix: "350€", lien: "https://www.delonghi.com", statut: "Idée", occasion: "Noël (Cadeau commun)", note: "Magnifica S (Ça change la vie)" },
-            { id: 36, destinataire: "Famille", proche: "Parents", titre: "Bon pour un resto gastronomique", prix: "150€", lien: "", statut: "Idée", occasion: "Anniv de mariage", note: "À prendre dans leur ville" },
-            { id: 37, destinataire: "Famille", proche: "Parents", titre: "Coffret Sommelier & Tire-bouchon électrique", prix: "40€", lien: "https://www.peugeot-saveurs.com", statut: "Idée", occasion: "Noël", note: "Marque Peugeot" },
-            { id: 38, destinataire: "Famille", proche: "Parents", titre: "Atelier Oenologie (Dégustation)", prix: "70€", lien: "https://www.degustation-de-vin.fr", statut: "Idée", occasion: "Anniversaire", note: "Pour 2 personnes" },
-            { id: 39, destinataire: "Famille", proche: "Parents", titre: "Livre sur leur région ou passion", prix: "35€", lien: "https://www.fnac.com", statut: "Idée", occasion: "Fête", note: "Beau livre illustré" },
-            { id: 40, destinataire: "Famille", proche: "Parents", titre: "Séjour dans une cabane dans les arbres", prix: "180€", lien: "https://www.cabanes-de-france.com", statut: "Idée", occasion: "Noël", note: "Week-end insolite" },
-            { id: 41, destinataire: "Famille", proche: "Parents", titre: "Abonnement théâtre / spectacles", prix: "100€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Carte de la salle du coin" },
-
-            // ================== FAMILLE : FRATRIE (FRÈRES / SŒURS) ==================
-            { id: 42, destinataire: "Famille", proche: "Fratrie", titre: "Enceinte Bluetooth JBL ou Ultimate Ears", prix: "90€", lien: "", statut: "Idée", occasion: "Noël", note: "Étanche pour l'été" },
-            { id: 43, destinataire: "Famille", proche: "Fratrie", titre: "Sac à dos Rains ou Faguo", prix: "80€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Pour les cours/le boulot" },
-            { id: 44, destinataire: "Famille", proche: "Fratrie", titre: "Kit de brassage de bière à la maison", prix: "50€", lien: "https://www.saveur-biere.com", statut: "Idée", occasion: "Noël", note: "Kit complet débutant" },
-            { id: 45, destinataire: "Famille", proche: "Fratrie", titre: "Place de concert ou Festival", prix: "70€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "À y aller ensemble" },
-            { id: 46, destinataire: "Famille", proche: "Fratrie", titre: "Jeu vidéo Switch récent", prix: "50€", lien: "https://www.micromania.fr", statut: "Idée", occasion: "Noël", note: "Mario Kart, Zelda..." },
-            { id: 47, destinataire: "Famille", proche: "Fratrie", titre: "Coffret soin corps (Rituals / Lush)", prix: "35€", lien: "https://www.rituals.com", statut: "Idée", occasion: "Anniversaire", note: "" },
-
-            // ================== FAMILLE : GRANDS-PARENTS ==================
-            { id: 48, destinataire: "Famille", proche: "Grands-parents", titre: "Cadre photo connecté (Aura / Nixplay)", prix: "150€", lien: "https://auraframes.fr", statut: "Idée", occasion: "Noël (Commun)", note: "Toute la famille peut envoyer des photos dessus à distance !" },
-            { id: 49, destinataire: "Famille", proche: "Grands-parents", titre: "Plaid chauffant ou en laine mérinos", prix: "60€", lien: "", statut: "Idée", occasion: "Noël", note: "Pour le canapé" },
-            { id: 50, destinataire: "Famille", proche: "Grands-parents", titre: "Livre 'Raconte-moi ton histoire'", prix: "25€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Anniversaire", note: "Livre à remplir sur leur vie" },
-            { id: 51, destinataire: "Famille", proche: "Grands-parents", titre: "Coffret de thés haut de gamme (Mariage Frères)", prix: "45€", lien: "https://www.mariagefreres.com", statut: "Idée", occasion: "Fête des grands-mères", note: "" },
-            { id: 52, destinataire: "Famille", proche: "Grands-parents", titre: "Panier garni produits du terroir", prix: "50€", lien: "", statut: "Idée", occasion: "Noël", note: "Foie gras, confitures, vin" },
-            { id: 53, destinataire: "Famille", proche: "Grands-parents", titre: "Station météo avec grand écran", prix: "40€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Simple et lisible" },
-
-            // ================== FAMILLE : ONCLES & TANTES ==================
-            { id: 54, destinataire: "Famille", proche: "Oncles/Tantes", titre: "Coffret d'épices du monde (Terre Exotique)", prix: "35€", lien: "https://www.terreexotique.fr", statut: "Idée", occasion: "Noël", note: "Pour ceux qui aiment cuisiner" },
-            { id: 55, destinataire: "Famille", proche: "Oncles/Tantes", titre: "Terrarium (plante sous verre)", prix: "45€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Très déco et zéro entretien" },
-            { id: 56, destinataire: "Famille", proche: "Oncles/Tantes", titre: "Bouteille d'un très bon spiritueux", prix: "60€", lien: "", statut: "Idée", occasion: "Noël", note: "Rhum Don Papa ou Whisky japonais" },
-            { id: 57, destinataire: "Famille", proche: "Oncles/Tantes", titre: "Huile d'olive grand cru", prix: "30€", lien: "", statut: "Idée", occasion: "Noël", note: "Bouteille design" },
-            { id: 58, destinataire: "Famille", proche: "Oncles/Tantes", titre: "Beaux bougeoirs ou bougie Baobab", prix: "50-100€", lien: "https://www.baobabcollection.com", statut: "Idée", occasion: "Anniversaire", note: "" },
-
-            // ================== FAMILLE : ENFANTS & ADOS ==================
-            { id: 59, destinataire: "Famille", proche: "Enfants/Ados", titre: "La Fabrique à Histoires (Lunii)", prix: "65€", lien: "https://lunii.com", statut: "Idée", occasion: "Noël (3-7 ans)", note: "Le meilleur cadeau sans écran pour les petits" },
-            { id: 60, destinataire: "Famille", proche: "Enfants/Ados", titre: "Gros set LEGO (Harry Potter / Star Wars)", prix: "50-100€", lien: "https://www.lego.com", statut: "Idée", occasion: "Anniversaire (8+)", note: "Toujours un succès" },
-            { id: 61, destinataire: "Famille", proche: "Enfants/Ados", titre: "Déco Néon Led (Forme manette ou texte)", prix: "30€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Noël (Ado)", note: "Pour la chambre" },
-            { id: 62, destinataire: "Famille", proche: "Enfants/Ados", titre: "AirPods (Apple)", prix: "140€", lien: "https://www.apple.com", statut: "Idée", occasion: "Gros cadeau Ado", note: "Le graal des lycéens" },
-            { id: 63, destinataire: "Famille", proche: "Enfants/Ados", titre: "Gourde AirUp", prix: "40€", lien: "https://fr.air-up.com", statut: "Idée", occasion: "Anniversaire", note: "La gourde qui donne du goût à l'eau, ultra tendance" },
-            { id: 64, destinataire: "Famille", proche: "Enfants/Ados", titre: "Collection Manga (One Piece / Demon Slayer)", prix: "7€ l'unité", lien: "https://www.fnac.com", statut: "Idée", occasion: "Noël", note: "Acheter les tomes qui leur manquent" },
-            { id: 65, destinataire: "Famille", proche: "Enfants/Ados", titre: "Appareil photo enfant KidiZoom", prix: "50€", lien: "", statut: "Idée", occasion: "Anniv (4-8 ans)", note: "Résistant aux chocs" },
-            { id: 66, destinataire: "Famille", proche: "Enfants/Ados", titre: "Carte Cadeau (Cultura / PSN / V-Bucks)", prix: "20-50€", lien: "", statut: "Idée", occasion: "Dépannage Ado", note: "Quand on n'a vraiment aucune idée" }
-        ];
-
         let cadeaux = [];
         let currentRecipient = 'Tous';
         let currentSubFilter = 'Tous';
         let currentStatus = 'Tous';
+        let unsubscribeSnapshot = null;
+        let isSeeding = false;
 
-        function loadData() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try { 
-                    cadeaux = JSON.parse(saved);
-                    // Si le cache est vide on remet la base
-                    if(cadeaux.length === 0) cadeaux = [...baseCadeaux];
-                } catch(e) { cadeaux = [...baseCadeaux]; }
+        const baseCadeaux = [
+            { destinataire: "Moi", titre: "Baskets Adidas Campus 00s", prix: "110€", lien: "", statut: "Idée", occasion: "Anniv / Noël", note: "Couleur verte ou beige, pointure habituelle" },
+            { destinataire: "Moi", titre: "Sac Polène (Numéro Dix ou Neuf)", prix: "350€", lien: "https://fr.polene-paris.com", statut: "Idée", occasion: "Gros cadeau", note: "Couleur Camel ou Noir" },
+            { destinataire: "Moi", titre: "Atelier Poterie / Céramique", prix: "50€", lien: "https://wecandoo.fr/", statut: "Idée", occasion: "Anniversaire", note: "Pour faire des tasses" },
+            { destinataire: "Moi", titre: "Coffret Charlotte Tilbury (Pillow Talk)", prix: "45€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Noël", note: "Le kit lèvres" },
+            { destinataire: "Moi", titre: "Gua Sha & Roller en Quartz", prix: "25€", lien: "", statut: "Idée", occasion: "Petit cadeau", note: "Pour la routine skincare" },
+            { destinataire: "Moi", titre: "Appareil photo argentique réutilisable", prix: "40€", lien: "https://www.kodak.com", statut: "Idée", occasion: "Anniversaire", note: "Kodak Ektar H35 (le format half-frame) + pellicules" },
+            { destinataire: "Moi", titre: "Veste blazer oversize", prix: "70€", lien: "https://www.zara.com", statut: "Idée", occasion: "Noël", note: "Gris chiné ou beige" },
+            { destinataire: "Moi", titre: "Brosse soufflante (Type Revlon/Dyson)", prix: "60-400€", lien: "", statut: "Idée", occasion: "Noël", note: "Pour les brushings parfaits" },
+            { destinataire: "Moi", titre: "Parfum Libre - Yves Saint Laurent", prix: "80€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Anniversaire", note: "Eau de parfum classique" },
+            { destinataire: "Moi", titre: "AirTags Apple", prix: "35€", lien: "https://www.apple.com", statut: "Idée", occasion: "Noël", note: "Pour ne plus perdre mes clés" },
+            { destinataire: "Moi", titre: "Lampe Sunset pour la chambre", prix: "20€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Secret Santa", note: "Effet golden hour" },
+            { destinataire: "Moi", titre: "Coffret huiles cheveux Gisou", prix: "35€", lien: "https://www.sephora.fr", statut: "Idée", occasion: "Noël", note: "" },
+            { destinataire: "Moi", titre: "Concert de mon artiste préféré", prix: "60€", lien: "https://www.ticketmaster.fr", statut: "Idée", occasion: "Anniversaire", note: "À surveiller !" },
+            { destinataire: "Copain", titre: "Casque conduction osseuse Shokz", prix: "140€", lien: "https://shokz.com", statut: "Idée", occasion: "25 ans", note: "Modèle OpenRun, indispensable pour courir en sécurité" },
+            { destinataire: "Copain", titre: "Montre Garmin Forerunner 265", prix: "450€", lien: "https://www.garmin.com", statut: "Idée", occasion: "Gros cadeau", note: "La meilleure montre running actuelle" },
+            { destinataire: "Copain", titre: "Dossard pour un Semi-Marathon", prix: "50€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Paris, Bordeaux ou Valence" },
+            { destinataire: "Copain", titre: "Gilet d'hydratation Salomon", prix: "90€", lien: "https://www.salomon.com", statut: "Idée", occasion: "Noël", note: "Modèle Active Skin 4 ou 8 (Taille M)" },
+            { destinataire: "Copain", titre: "Chaussettes techniques running", prix: "20€", lien: "https://www.stancesocks.fr", statut: "Idée", occasion: "Petit cadeau", note: "Stance ou Compressport" },
+            { destinataire: "Copain", titre: "T-shirt respirant stylé", prix: "80€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Du textile running premium" },
+            { destinataire: "Copain", titre: "Pistolet de massage musculaire", prix: "100€", lien: "https://www.therabody.com", statut: "Idée", occasion: "Noël", note: "Pour sa récup après les longues sorties" },
+            { destinataire: "Copain", titre: "Pack de gels/nutrition Maurten", prix: "40€", lien: "https://www.maurten.com", statut: "Idée", occasion: "Petit cadeau", note: "La marque pro, pack découverte" },
+            { destinataire: "Copain", titre: "Bonnet de course Ciele", prix: "35€", lien: "https://cieleathletics.com", statut: "Idée", occasion: "Noël", note: "Très stylé et technique" },
+            { destinataire: "Copain", titre: "Week-end surprise (Europe)", prix: "250€", lien: "https://www.airbnb.fr", statut: "Idée", occasion: "Anniversaire", note: "Rome, Lisbonne ou Amsterdam" },
+            { destinataire: "Copain", titre: "Stage de pilotage", prix: "150€", lien: "https://www.smartbox.com", statut: "Idée", occasion: "Anniversaire", note: "Sur circuit (Porsche, Ferrari...)" },
+            { destinataire: "Copain", titre: "Abonnement Strava Premium", prix: "60€", lien: "https://www.strava.com", statut: "Idée", occasion: "Noël", note: "Le réseau social des coureurs" },
+            { destinataire: "Copain", titre: "Livre 'Born to Run'", prix: "22€", lien: "https://www.fnac.com", statut: "Idée", occasion: "Petit cadeau", note: "Le livre culte de la course à pied" },
+            { destinataire: "Amis", titre: "Jeu 'Tu te mets combien ?' (TTMC)", prix: "35€", lien: "", statut: "Idée", occasion: "Crémaillère", note: "Le meilleur jeu de culture G fun" },
+            { destinataire: "Amis", titre: "Jeu 'Code Names'", prix: "20€", lien: "", statut: "Idée", occasion: "Noël / Soirée", note: "Incontournable pour jouer en équipe" },
+            { destinataire: "Amis", titre: "Kit à faire ses propres cocktails", prix: "30€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Anniv", note: "Shaker, doseur, pilon" },
+            { destinataire: "Amis", titre: "Polaroid / Instax Mini 12", prix: "80€", lien: "", statut: "Idée", occasion: "Cadeau commun", note: "Pour garder des souvenirs des soirées" },
+            { destinataire: "Amis", titre: "Mug personnalisé", prix: "15€", lien: "", statut: "Idée", occasion: "Secret Santa", note: "Au bureau" },
+            { destinataire: "Amis", titre: "Abonnement bières", prix: "60€", lien: "https://unepetitemousse.fr", statut: "Idée", occasion: "Anniversaire", note: "Box 3 mois" },
+            { destinataire: "Amis", titre: "Plante d'intérieur (Monstera)", prix: "25€", lien: "", statut: "Idée", occasion: "Crémaillère", note: "Dans un beau cache-pot" },
+            { destinataire: "Famille", proche: "Parents", titre: "Machine à café à grains (Delonghi)", prix: "350€", lien: "https://www.delonghi.com", statut: "Idée", occasion: "Noël (Commun)", note: "Magnifica S" },
+            { destinataire: "Famille", proche: "Parents", titre: "Bon pour un resto gastronomique", prix: "150€", lien: "", statut: "Idée", occasion: "Anniv de mariage", note: "À prendre dans leur ville" },
+            { destinataire: "Famille", proche: "Parents", titre: "Coffret Sommelier", prix: "40€", lien: "https://www.peugeot-saveurs.com", statut: "Idée", occasion: "Noël", note: "Marque Peugeot" },
+            { destinataire: "Famille", proche: "Parents", titre: "Atelier Oenologie", prix: "70€", lien: "https://www.degustation-de-vin.fr", statut: "Idée", occasion: "Anniversaire", note: "Pour 2 personnes" },
+            { destinataire: "Famille", proche: "Parents", titre: "Séjour cabane dans les arbres", prix: "180€", lien: "https://www.cabanes-de-france.com", statut: "Idée", occasion: "Noël", note: "Week-end insolite" },
+            { destinataire: "Famille", proche: "Fratrie", titre: "Enceinte Bluetooth", prix: "90€", lien: "", statut: "Idée", occasion: "Noël", note: "Étanche pour l'été" },
+            { destinataire: "Famille", proche: "Fratrie", titre: "Sac à dos Rains ou Faguo", prix: "80€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Pour les cours/le boulot" },
+            { destinataire: "Famille", proche: "Fratrie", titre: "Kit de brassage de bière", prix: "50€", lien: "https://www.saveur-biere.com", statut: "Idée", occasion: "Noël", note: "Kit complet débutant" },
+            { destinataire: "Famille", proche: "Fratrie", titre: "Place de concert ou Festival", prix: "70€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "À y aller ensemble" },
+            { destinataire: "Famille", proche: "Fratrie", titre: "Jeu vidéo Switch", prix: "50€", lien: "https://www.micromania.fr", statut: "Idée", occasion: "Noël", note: "Mario Kart, Zelda..." },
+            { destinataire: "Famille", proche: "Grands-parents", titre: "Cadre photo connecté", prix: "150€", lien: "https://auraframes.fr", statut: "Idée", occasion: "Noël", note: "Toute la famille peut envoyer des photos" },
+            { destinataire: "Famille", proche: "Grands-parents", titre: "Plaid chauffant", prix: "60€", lien: "", statut: "Idée", occasion: "Noël", note: "Pour le canapé" },
+            { destinataire: "Famille", proche: "Grands-parents", titre: "Livre 'Raconte-moi ton histoire'", prix: "25€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Anniversaire", note: "Livre à remplir sur leur vie" },
+            { destinataire: "Famille", proche: "Grands-parents", titre: "Coffret de thés", prix: "45€", lien: "https://www.mariagefreres.com", statut: "Idée", occasion: "Fête", note: "" },
+            { destinataire: "Famille", proche: "Grands-parents", titre: "Panier garni terroir", prix: "50€", lien: "", statut: "Idée", occasion: "Noël", note: "Foie gras, confitures, vin" },
+            { destinataire: "Famille", proche: "Oncles/Tantes", titre: "Coffret d'épices du monde", prix: "35€", lien: "https://www.terreexotique.fr", statut: "Idée", occasion: "Noël", note: "Pour ceux qui aiment cuisiner" },
+            { destinataire: "Famille", proche: "Oncles/Tantes", titre: "Terrarium", prix: "45€", lien: "", statut: "Idée", occasion: "Anniversaire", note: "Très déco et zéro entretien" },
+            { destinataire: "Famille", proche: "Oncles/Tantes", titre: "Bouteille spiritueux", prix: "60€", lien: "", statut: "Idée", occasion: "Noël", note: "Rhum ou Whisky" },
+            { destinataire: "Famille", proche: "Oncles/Tantes", titre: "Huile d'olive grand cru", prix: "30€", lien: "", statut: "Idée", occasion: "Noël", note: "Bouteille design" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "La Fabrique à Histoires (Lunii)", prix: "65€", lien: "https://lunii.com", statut: "Idée", occasion: "Noël (3-7 ans)", note: "Le meilleur cadeau sans écran" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Gros set LEGO", prix: "50-100€", lien: "https://www.lego.com", statut: "Idée", occasion: "Anniversaire", note: "Toujours un succès" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Déco Néon Led", prix: "30€", lien: "https://www.amazon.fr", statut: "Idée", occasion: "Noël (Ado)", note: "Pour la chambre" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "AirPods", prix: "140€", lien: "https://www.apple.com", statut: "Idée", occasion: "Gros cadeau Ado", note: "Le graal des lycéens" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Gourde AirUp", prix: "40€", lien: "https://fr.air-up.com", statut: "Idée", occasion: "Anniversaire", note: "La gourde tendance" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Collection Manga", prix: "7€ l'unité", lien: "https://www.fnac.com", statut: "Idée", occasion: "Noël", note: "One Piece / Demon Slayer" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Appareil photo KidiZoom", prix: "50€", lien: "", statut: "Idée", occasion: "Anniv", note: "Résistant aux chocs" },
+            { destinataire: "Famille", proche: "Enfants/Ados", titre: "Carte Cadeau (PSN / V-Bucks)", prix: "20-50€", lien: "", statut: "Idée", occasion: "Dépannage Ado", note: "Valeur sûre" }
+        ];
+
+        // ================= AUTHENTIFICATION =================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('body-container').classList.remove('overflow-hidden');
+                }, 500);
+                
+                document.getElementById('btn-add').classList.remove('hidden');
+                loadDataCloud();
             } else {
-                cadeaux = [...baseCadeaux];
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('login-screen').style.opacity = '1';
+                document.getElementById('body-container').classList.add('overflow-hidden');
+                document.getElementById('btn-add').classList.add('hidden');
+                if(unsubscribeSnapshot) unsubscribeSnapshot();
             }
-            renderGifts();
-        }
+        });
 
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(cadeaux));
-        }
+        window.handleLogin = async () => {
+            const email = document.getElementById('email-input').value.trim();
+            const pwd = document.getElementById('pwd-input').value.trim();
+            const btn = document.getElementById('btn-login');
+            const errorText = document.getElementById('login-error');
+            
+            if(!email || !pwd) return;
 
-        function renderGifts() {
-            const container = document.getElementById('gifts-container');
-            container.innerHTML = '';
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            errorText.style.opacity = '0';
 
-            // Filtrage multiple
-            const filtered = cadeaux.filter(cadeau => {
-                const matchRecipient = currentRecipient === 'Tous' || cadeau.destinataire === currentRecipient;
-                // Si la famille est sélectionnée et qu'un sous-filtre est actif
-                const matchSub = currentRecipient !== 'Famille' || currentSubFilter === 'Tous' || cadeau.proche === currentSubFilter;
-                const matchStatus = currentStatus === 'Tous' || cadeau.statut === currentStatus;
-                
-                return matchRecipient && matchSub && matchStatus;
-            });
-
-            document.getElementById('gift-counter').innerText = filtered.length + " idées";
-
-            if(filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-                        <div class="text-4xl mb-3">🤔</div>
-                        <h3 class="text-base font-bold text-gray-700">Aucune idée ici !</h3>
-                        <p class="text-xs text-gray-400 mt-1">Ajoutez-en une via le bouton + en bas.</p>
-                    </div>`;
-                return;
+            try {
+                await signInWithEmailAndPassword(auth, email, pwd);
+            } catch (error) {
+                errorText.style.opacity = '1';
+                btn.innerHTML = `Ouvrir le registre`;
             }
+        };
 
-            filtered.forEach(cadeau => {
-                let badgeClass = cadeau.statut === 'Acheté' 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm' 
-                    : 'bg-orange-50 text-orange-700 border-orange-200 shadow-sm';
-                
-                let iconStatut = cadeau.statut === 'Acheté' ? '✅' : '💡';
-                
-                // Formater l'étiquette destinataire
-                let destLabel = cadeau.destinataire;
-                if (cadeau.destinataire === 'Famille' && cadeau.proche) destLabel += ` • ${cadeau.proche}`;
-                if (cadeau.occasion) destLabel += ` • ${cadeau.occasion}`;
+        window.handleLogout = () => signOut(auth);
 
-                const card = document.createElement('div');
-                card.className = "bg-brandCard rounded-3xl p-5 shadow-[0_2px_15px_-10px_rgba(0,0,0,0.1)] border border-gray-100 relative transition-all duration-300";
-                
-                card.innerHTML = `
-                    <button onclick="deleteGift(${cadeau.id})" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition text-lg" title="Supprimer">🗑️</button>
+        // ================= GESTION CLOUD =================
+        function loadDataCloud() {
+            unsubscribeSnapshot = onSnapshot(collection(db, COLLECTION_PATH), async (snapshot) => {
+                if (snapshot.empty && !isSeeding) {
+                    isSeeding = true;
+                    document.getElementById('gifts-container').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500 font-medium animate-pulse">Initialisation du carnet d'idées...</p></div>`;
                     
-                    <div class="pr-6">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-brandPrimary bg-indigo-50 px-2 py-1 rounded-md mb-2 inline-block">
-                            ${destLabel}
-                        </span>
-                        <div class="flex justify-between items-start gap-2 mb-1">
-                            <h3 class="text-lg font-black leading-tight text-gray-800">${cadeau.titre}</h3>
-                        </div>
-                        ${cadeau.prix ? `<span class="text-sm font-bold text-brandAccent">${cadeau.prix}</span>` : ''}
-                    </div>
-                    
-                    ${cadeau.note ? `<div class="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-3"><p class="text-sm text-gray-600 font-medium italic">💬 ${cadeau.note}</p></div>` : ''}
-                    
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                        <button onclick="toggleGiftStatus(${cadeau.id})" class="text-xs font-bold px-3 py-2 rounded-lg border transition-all cursor-pointer hover:scale-105 active:scale-95 ${badgeClass}">
-                            ${iconStatut} ${cadeau.statut}
-                        </button>
-                        
-                        ${cadeau.lien ? `<a href="${cadeau.lien}" target="_blank" class="text-sm bg-brandDark text-white shadow-md hover:bg-black px-4 py-2 rounded-xl font-bold transition flex items-center gap-2">Voir <span>↗</span></a>` : ''}
-                    </div>
-                `;
-                container.appendChild(card);
+                    const batch = writeBatch(db);
+                    baseCadeaux.forEach((c, index) => {
+                        const docRef = doc(collection(db, COLLECTION_PATH));
+                        batch.set(docRef, { ...c, timestamp: Date.now() - index });
+                    });
+                    await batch.commit();
+                } else {
+                    cadeaux = [];
+                    snapshot.forEach((doc) => {
+                        cadeaux.push({ id: doc.id, ...doc.data() });
+                    });
+                    cadeaux.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    renderGifts();
+                }
             });
         }
 
-        function setRecipient(rec) {
+        window.setRecipient = function(rec) {
             currentRecipient = rec;
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.innerText.includes(rec) || (rec === 'Tous' && btn.innerText.includes('Tout'))) {
-                    btn.className = "filter-btn active shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-brandPrimary text-white shadow-md";
+                    btn.className = "filter-btn active shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-gray-900 text-white shadow-sm";
                 } else {
-                    btn.className = "filter-btn shrink-0 px-5 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-gray-600 border border-gray-200";
+                    btn.className = "filter-btn shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50";
                 }
             });
 
-            // Afficher/Cacher les sous-filtres Famille
             const subFilterContainer = document.getElementById('family-subfilters');
             if(rec === 'Famille') {
                 subFilterContainer.classList.remove('hidden');
@@ -339,56 +351,113 @@
             } else {
                 subFilterContainer.classList.add('hidden');
                 subFilterContainer.classList.remove('flex');
-                currentSubFilter = 'Tous'; // Reset subfilter
+                currentSubFilter = 'Tous';
                 updateSubFilterButtons();
             }
             renderGifts();
-        }
+        };
 
-        function setSubFilter(sub) {
+        window.setSubFilter = function(sub) {
             currentSubFilter = sub;
             updateSubFilterButtons();
             renderGifts();
-        }
+        };
 
         function updateSubFilterButtons() {
             document.querySelectorAll('.subfilter-btn').forEach(btn => {
                 if(btn.innerText === currentSubFilter || (currentSubFilter === 'Tous' && btn.innerText === 'Tous')) {
-                    btn.className = "subfilter-btn active shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-brandDark text-white";
+                    btn.className = "subfilter-btn active shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-gray-800 text-white";
                 } else {
-                    btn.className = "subfilter-btn shrink-0 px-4 py-1.5 rounded-full font-medium text-xs transition-all bg-gray-200 text-gray-700";
+                    btn.className = "subfilter-btn shrink-0 px-3 py-1.5 rounded-md font-medium text-xs transition-all bg-white border border-gray-200 text-gray-600";
                 }
             });
         }
 
-        function setStatus(stat) {
+        window.setStatus = function(stat) {
             currentStatus = stat;
             document.querySelectorAll('.status-btn').forEach(btn => {
-                btn.className = "status-btn flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all";
+                btn.className = "status-btn pb-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all";
             });
             const activeBtn = document.getElementById(`status-${stat}`);
-            activeBtn.className = "status-btn flex-1 py-2.5 rounded-xl text-sm font-bold bg-white shadow-sm text-brandPrimary transition-all";
+            activeBtn.className = "status-btn pb-3 text-sm font-semibold border-b-2 border-gray-900 text-gray-900 transition-all";
             renderGifts();
+        };
+
+        window.toggleGiftStatus = async function(id) {
+            const cadeau = cadeaux.find(c => c.id === id);
+            if (cadeau) {
+                const newStatut = cadeau.statut === 'Idée' ? 'Acheté' : 'Idée';
+                await updateDoc(doc(db, COLLECTION_PATH, id), { statut: newStatut });
+            }
+        };
+
+        window.deleteGift = async function(id) {
+            if(confirm("Retirer cette idée du carnet ?")) {
+                await deleteDoc(doc(db, COLLECTION_PATH, id));
+            }
+        };
+
+        function renderGifts() {
+            const container = document.getElementById('gifts-container');
+            container.innerHTML = '';
+
+            const filtered = cadeaux.filter(cadeau => {
+                const matchRecipient = currentRecipient === 'Tous' || cadeau.destinataire === currentRecipient;
+                const matchSub = currentRecipient !== 'Famille' || currentSubFilter === 'Tous' || cadeau.proche === currentSubFilter;
+                const matchStatus = currentStatus === 'Tous' || cadeau.statut === currentStatus;
+                return matchRecipient && matchSub && matchStatus;
+            });
+
+            document.getElementById('gift-counter').innerText = filtered.length + " idées";
+
+            if(filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
+                        <p class="text-sm font-medium text-gray-500">Aucune idée trouvée pour ces critères.</p>
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach(cadeau => {
+                let badgeClass = cadeau.statut === 'Acheté' 
+                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' 
+                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
+                
+                let iconStatut = cadeau.statut === 'Acheté' ? '✓' : '+';
+                let textStatut = cadeau.statut === 'Acheté' ? 'Acheté' : 'À trouver';
+                
+                let destLabel = cadeau.destinataire;
+                if (cadeau.destinataire === 'Famille' && cadeau.proche) destLabel += ` • ${cadeau.proche}`;
+                if (cadeau.occasion) destLabel += ` • ${cadeau.occasion}`;
+
+                const card = document.createElement('div');
+                card.className = "gift-card bg-white rounded-xl p-5 border border-gray-200 relative flex flex-col justify-between";
+                
+                card.innerHTML = `
+                    <button onclick="deleteGift('${cadeau.id}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors text-lg leading-none" title="Supprimer">✕</button>
+                    
+                    <div class="pr-6 mb-3">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 bg-gray-100 px-2 py-1 rounded mb-2 inline-block">
+                            Pour: ${destLabel}
+                        </span>
+                        <h3 class="text-base font-bold text-gray-900 leading-tight">${cadeau.titre}</h3>
+                        ${cadeau.prix ? `<span class="text-sm font-medium text-gray-500 mt-1 block">${cadeau.prix}</span>` : ''}
+                    </div>
+                    
+                    ${cadeau.note ? `<p class="text-xs text-gray-500 italic mb-4">Note : ${cadeau.note}</p>` : '<div class="mb-4"></div>'}
+                    
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                        <button onclick="toggleGiftStatus('${cadeau.id}')" class="text-xs font-semibold px-3 py-1.5 rounded-md border transition-colors flex items-center gap-1.5 ${badgeClass}">
+                            <span class="text-sm leading-none">${iconStatut}</span> ${textStatut}
+                        </button>
+                        
+                        ${cadeau.lien ? `<a href="${cadeau.lien}" target="_blank" class="text-xs font-semibold text-gray-900 hover:text-gray-500 transition-colors flex items-center gap-1">Voir en ligne <span>↗</span></a>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        window.toggleGiftStatus = function(id) {
-            const index = cadeaux.findIndex(c => c.id === id);
-            if (index > -1) {
-                cadeaux[index].statut = cadeaux[index].statut === 'Idée' ? 'Acheté' : 'Idée';
-                saveData();
-                renderGifts();
-            }
-        };
-
-        window.deleteGift = function(id) {
-            if(confirm("Supprimer cette idée de cadeau ?")) {
-                cadeaux = cadeaux.filter(c => c.id !== id);
-                saveData();
-                renderGifts();
-            }
-        };
-
-        // Modale d'ajout
         window.openAddModal = () => document.getElementById('add-modal').showModal();
         window.closeAddModal = () => {
             document.getElementById('add-modal').close();
@@ -406,34 +475,34 @@
             }
         };
 
-        window.submitNewGift = function(e) {
+        window.submitNewGift = async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            btn.innerText = "Ajout en cours...";
+            
             const dest = document.getElementById('f-dest').value;
             
-            const newGift = {
-                id: Date.now(), // ID unique facile
-                destinataire: dest,
-                proche: dest === 'Famille' ? document.getElementById('f-proche').value : null,
-                titre: document.getElementById('f-titre').value,
-                prix: document.getElementById('f-prix').value,
-                occasion: document.getElementById('f-occasion').value,
-                statut: document.getElementById('f-statut').value,
-                lien: document.getElementById('f-lien').value,
-                note: document.getElementById('f-note').value
-            };
-
-            cadeaux.unshift(newGift); // Ajout au début
-            saveData();
-            renderGifts();
-            closeAddModal();
-            
-            // On bascule automatiquement sur le bon filtre pour voir l'ajout
-            setRecipient(dest);
+            try {
+                await addDoc(collection(db, COLLECTION_PATH), {
+                    destinataire: dest,
+                    proche: dest === 'Famille' ? document.getElementById('f-proche').value : null,
+                    titre: document.getElementById('f-titre').value,
+                    prix: document.getElementById('f-prix').value,
+                    occasion: document.getElementById('f-occasion').value,
+                    statut: document.getElementById('f-statut').value,
+                    lien: document.getElementById('f-lien').value,
+                    note: document.getElementById('f-note').value,
+                    timestamp: Date.now()
+                });
+                
+                closeAddModal();
+                setRecipient(dest);
+            } catch (error) {
+                alert("Erreur lors de l'ajout.");
+            } finally {
+                btn.innerText = "Enregistrer l'idée";
+            }
         };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-        });
     </script>
 </body>
 </html>
